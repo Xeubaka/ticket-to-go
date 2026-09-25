@@ -1,0 +1,26 @@
+{
+  "name": "ticket-to-go",
+  "private": true,
+  "description": "Umbrella repo: backend/ and frontend/ are git submodules; this repo holds docs, CI, compose and git-hook tooling.",
+  "packageManager": "pnpm@12.6.0",
+  "scripts": {
+    "prepare": "husky",
+    "format": "pnpm --dir backend format && pnpm --dir frontend format"
+  },
+  "lint-staged": {
+    "*.{md,yml,json}": "prettier --write"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.5.1",
+    "prettier": "^3.9.9",
+    "prettier-plugin-tailwindcss": "^0.8.1"
+  }
+}

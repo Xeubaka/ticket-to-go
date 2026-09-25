@@ -1,0 +1,19 @@
+node_modules/
+dist/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+blob-report/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.turbo/
+*.tsbuildinfo
+graphify-out/
+
+# Local Claude Code hooks installed by graphify (absolute, machine-specific paths)
+.claude/settings.json

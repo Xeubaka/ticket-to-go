@@ -1,0 +1,37 @@
+name: ticket-to-go
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ticket
+      POSTGRES_PASSWORD: ticket
+      POSTGRES_DB: ticket_to_go
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ticket -d ticket_to_go"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  postgres-test:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ticket
+      POSTGRES_PASSWORD: ticket
+      POSTGRES_DB: ticket_to_go_test
+    ports:
+      - "5433:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ticket -d ticket_to_go_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:

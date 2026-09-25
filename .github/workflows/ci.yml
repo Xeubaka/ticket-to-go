@@ -1,0 +1,148 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 24
+  PNPM_VERSION: 12.6.0
+
+jobs:
+  backend:
+    name: Backend · lint, types, unit + integration + e2e
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: ticket
+          POSTGRES_PASSWORD: ticket
+          POSTGRES_DB: ticket_to_go
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U ticket" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://ticket:ticket@localhost:5432/ticket_to_go?schema=public
+      JWT_ACCESS_SECRET: ci-access-secret-that-is-long-enough-1234
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: backend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - name: Migrations apply cleanly and match the schema (no drift)
+        run: |
+          pnpm db:deploy
+          pnpm db:drift
+      - name: OpenAPI contract is up to date
+        run: |
+          pnpm build
+          pnpm openapi:export
+          git diff --exit-code openapi.json
+      # Integration and e2e suites start their own Postgres via Testcontainers.
+      - name: Tests (unit + integration + e2e) with coverage thresholds
+        run: pnpm test:cov
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-coverage
+          path: backend/coverage
+          retention-days: 7
+
+  frontend:
+    name: Frontend · lint, types, unit + integration
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: API client types match the backend contract
+        run: |
+          pnpm api:generate
+          git diff --exit-code src/lib/api/schema.d.ts
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - name: Tests (unit + integration) with coverage thresholds
+        run: pnpm test:cov
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-coverage
+          path: frontend/coverage
+          retention-days: 7
+
+  e2e:
+    name: Full-stack E2E · Playwright
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    services:
+      postgres-test:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: ticket
+          POSTGRES_PASSWORD: ticket
+          POSTGRES_DB: ticket_to_go_test
+        ports: ["5433:5432"]
+        options: >-
+          --health-cmd "pg_isready -U ticket" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: |
+            backend/pnpm-lock.yaml
+            frontend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+        working-directory: backend
+      - run: pnpm install --frozen-lockfile
+        working-directory: frontend
+      - run: pnpm exec playwright install --with-deps chromium firefox
+        working-directory: frontend
+      # Playwright's webServer builds and starts the API (reset + seed) and the Next.js app.
+      - run: pnpm test:e2e
+        working-directory: frontend
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          retention-days: 7

@@ -1,0 +1,6 @@
+[submodule "backend"]
+	path = backend
+	url = https://github.com/Xeubaka/backend-ticket-to-go.git
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/Xeubaka/frontend-ticket-to-go.git

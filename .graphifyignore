@@ -1,0 +1,14 @@
+# Husky's .husky/_/.gitignore contains "*", which graphify applies repo-wide
+# (nested-ignore anchoring bug). Pruning the directory avoids loading it.
+.husky/
+# Generated code: Prisma client, OpenAPI types/document, Next artifacts, e2e build.
+backend/src/generated/
+backend/openapi.json
+frontend/src/lib/api/schema.d.ts
+frontend/next-env.d.ts
+frontend/.next-e2e/
+**/pnpm-workspace.yaml
+# Agent instruction files: pointers to docs already in the graph.
+**/CLAUDE.md
+**/AGENTS.md
+CLAUDE.md
