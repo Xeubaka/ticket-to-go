@@ -9,14 +9,15 @@ Movie theater ticket booking platform. Two independent apps, each a **git submod
 
 ## Read before working
 
-| Working on                                | Load first                                                                                                                                                                      |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| anything in `backend/`                    | skill `backend-nestjs` (`.claude/skills/backend-nestjs/SKILL.md`)                                                                                                               |
-| anything in `frontend/`                   | skill `frontend-nextjs` (`.claude/skills/frontend-nextjs/SKILL.md`), and `frontend/AGENTS.md`: Next 16 APIs differ from older versions, so check `node_modules/next/dist/docs/` |
-| seat holds / booking concurrency          | `docs/adr/0001-seat-holds-and-concurrency.md`                                                                                                                                   |
-| auth, cookies, `/api` rewrite, `proxy.ts` | `docs/adr/0002-auth-cookies-and-bff-rewrite.md`                                                                                                                                 |
-| tests, Playwright setup, Windows quirks   | `docs/adr/0003-testing-strategy.md`                                                                                                                                             |
-| original scope and deviations             | `docs/IMPLEMENTATION_PLAN.md` (§10 lists what changed)                                                                                                                          |
+| Working on                                      | Load first                                                                                                                                                                      |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| anything in `backend/`                          | skill `backend-nestjs` (`.claude/skills/backend-nestjs/SKILL.md`)                                                                                                               |
+| anything in `frontend/`                         | skill `frontend-nextjs` (`.claude/skills/frontend-nextjs/SKILL.md`), and `frontend/AGENTS.md`: Next 16 APIs differ from older versions, so check `node_modules/next/dist/docs/` |
+| seat holds / booking concurrency                | `docs/adr/0001-seat-holds-and-concurrency.md`                                                                                                                                   |
+| auth, cookies, `/api` rewrite, `proxy.ts`       | `docs/adr/0002-auth-cookies-and-bff-rewrite.md`                                                                                                                                 |
+| tests, Playwright setup, Windows quirks         | `docs/adr/0003-testing-strategy.md`                                                                                                                                             |
+| deploying (Neon, Cloudflare Containers/Workers) | `docs/DEPLOYMENT.md`                                                                                                                                                            |
+| original scope and deviations                   | `docs/IMPLEMENTATION_PLAN.md` (§10 lists what changed)                                                                                                                          |
 
 For "where is X / what calls Y" questions, use the graph (see the graphify section below) before grepping.
 

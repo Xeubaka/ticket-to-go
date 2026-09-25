@@ -13,6 +13,7 @@ auditoriums and showtimes.
 Conventions for each side are codified as Claude Code skills in
 [`.claude/skills/backend-nestjs`](.claude/skills/backend-nestjs/SKILL.md) and
 [`.claude/skills/frontend-nextjs`](.claude/skills/frontend-nextjs/SKILL.md).
+Deployment (Neon + Cloudflare Workers/Containers) is in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 Design decisions live in [`docs/adr`](docs/adr) and the original plan in
 [`docs/IMPLEMENTATION_PLAN.md`](docs/IMPLEMENTATION_PLAN.md).
 
